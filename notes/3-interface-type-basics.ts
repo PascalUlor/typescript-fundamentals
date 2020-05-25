@@ -4,48 +4,67 @@ import { HasPhoneNumber, HasEmail } from "./1-basics";
 /**
  * (1) Type aliases allow us to give a type a name
  */
-// type StringOrNumber = string | number;
+type StringOrNumber = string | number;
 
-// // this is the ONLY time you'll see a type on the RHS of assignment
-// type HasName = { name: string };
+let dummy: StringOrNumber = 8
+
+console.log('Alias >>>', dummy);
+
+// this is the ONLY time you'll see a type on the RHS of assignment
+type HasName = { name: string };
+
+let obj: HasName = { name: "Clark Kent" };
+console.log('Alias2 >>>', dummy);
 
 // NEW in TS 3.7: Self-referencing types!
 type NumVal = 1 | 2 | 3 | NumVal[];
+let selfRef: NumVal = [1,3,[1,3]];
+
+console.log('Alias3 >>>', selfRef);
 
 // == INTERFACE == //
 /**
  * (2) Interfaces can extend from other interfaces
  */
 
-// export interface HasInternationalPhoneNumber extends HasPhoneNumber {
-//   countryCode: string;
-// }
+export interface HasInternationalPhoneNumber extends HasPhoneNumber {
+  countryCode: string;
+}
+let dumInt: HasInternationalPhoneNumber = { countryCode: 'US', name: 'Haja', phone: 55555555}
+console.log('Interface1 >>>', dumInt);
 
 /**
  * (3) they can also be used to describe call signatures
  */
 
-// interface ContactMessenger1 {
-//   (contact: HasEmail | HasPhoneNumber, message: string): void;
-// }
+interface ContactMessenger1 {
+  (contact: HasEmail | HasPhoneNumber, message: string): void;
+}
 
-// type ContactMessenger2 = (
-//   contact: HasEmail | HasPhoneNumber,
-//   message: string
-// ) => void;
+type ContactMessenger2 = (
+  contact: HasEmail | HasPhoneNumber,
+  message: string
+) => void;
+
+const user: ContactMessenger2 = (Dcontact, Dmessage) => {
+  /** ... */
+};
+console.log('>>>void>>>', user({name:'pas', email:'pas'}, 'ppp'))
 
 // // NOTE: we don't need type annotations for contact or message
-// const emailer: ContactMessenger1 = (_contact, _message) => {
-//   /** ... */
-// };
+const emailer: ContactMessenger1 = (_contact, _message) => {
+  /** ... */
+};
+
+console.log(emailer({name: 'jjj', email: ''},'lll'), '>>>>')
 
 /**
  * (4) construct signatures can be described as well
  */
 
-// interface ContactConstructor {
-//   new (...args: any[]): HasEmail | HasPhoneNumber;
-// }
+interface ContactConstructor {
+  new (...args: any[]): HasEmail | HasPhoneNumber;
+}
 
 /**
  * (5) index signatures describe how a type will respond to property access
@@ -59,20 +78,20 @@ type NumVal = 1 | 2 | 3 | NumVal[];
  * }
  */
 
-// interface PhoneNumberDict {
-//   // arr[0],  foo['myProp']
-//   [numberName: string]:
-//     | undefined
-//     | {
-//         areaCode: number;
-//         num: number;
-//       };
-// }
+interface PhoneNumberDict {
+  // arr[0],  foo['myProp']
+  [numberName: string]:
+    | undefined
+    | {
+        areaCode: number;
+        num: number;
+      };
+}
 
-// const phoneDict: PhoneNumberDict = {
-//   office: { areaCode: 321, num: 5551212 },
-//   home: { areaCode: 321, num: 5550010 } // try editing me
-// };
+const phoneDict: PhoneNumberDict = {
+  office: { areaCode: 321, num: 5551212 },
+  home: { areaCode: 321, num: 5550010 } // try editing me
+};
 
 // at most, a type may have one string and one number index signature
 
@@ -80,26 +99,26 @@ type NumVal = 1 | 2 | 3 | NumVal[];
  * (6) they may be used in combination with other types
  */
 
-// // augment the existing PhoneNumberDict
-// // i.e., imported it from a library, adding stuff to it
-// interface PhoneNumberDict {
-//   home: {
-//     /**
-//      * (7) interfaces are "open", meaning any declarations of the
-//      * -   same name are merged
-//      */
-//     areaCode: number;
-//     num: number;
-//   };
-//   office: {
-//     areaCode: number;
-//     num: number;
-//   };
-// }
+// augment the existing PhoneNumberDict
+// i.e., imported it from a library, adding stuff to it
+interface PhoneNumberDict {
+  home: {
+    /**
+     * (7) interfaces are "open", meaning any declarations of the
+     * -   same name are merged
+     */
+    areaCode: number;
+    num: number;
+  };
+  office: {
+    areaCode: number;
+    num: number;
+  };
+}
 
-// phoneDict.home;   // definitely present
-// phoneDict.office; // definitely present
-// phoneDict.mobile; // MAYBE present
+phoneDict.home;   // definitely present
+phoneDict.office; // definitely present
+phoneDict.mobile; // MAYBE present
 
 // == TYPE ALIASES vs INTERFACES == //
 
